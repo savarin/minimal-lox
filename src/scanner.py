@@ -4,24 +4,33 @@ import enum
 
 
 class TokenType(enum.Enum):
+    # Types
+    INTEGER = "INTEGER"
+
     # Single-character tokens.
+    EQUAL = "EQUAL"
     MINUS = "MINUS"
     PLUS = "PLUS"
     SEMICOLON = "SEMICOLON"
     TIMES = "TIMES"
 
     # Keywords
-    INTEGER = "INTEGER"
+    NAME = "NAME"
+    VAR = "VAR"
 
     EOF = "EOF"
 
 
 literals: Dict[str, TokenType] = {
+    "=": TokenType.EQUAL,
     "-": TokenType.MINUS,
     "+": TokenType.PLUS,
     ";": TokenType.SEMICOLON,
     "*": TokenType.TIMES,
 }
+
+
+keywords: Dict[str, TokenType] = {"var": TokenType.VAR}
 
 
 @dataclasses.dataclass
@@ -45,6 +54,18 @@ def scan(source: str) -> List[Token]:
         # Whitespace
         elif source[counter].isspace():
             counter += 1
+
+        # Names
+        elif source[counter].isalpha():
+            start = counter
+
+            while counter < len(source) and source[counter].isalpha():
+                counter += 1
+
+            name = source[start:counter]
+            token_type = keywords.get(name, TokenType.NAME)
+
+            tokens.append(Token(token_type, name, line))
 
         # Integers
         elif source[counter].isdigit():
