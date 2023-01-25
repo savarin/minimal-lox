@@ -10,8 +10,8 @@ import statem
 def parse(tokens: List[scanner.Token]) -> statem.Statem:
     counter: int = 0
 
-    statement, _ = expression(tokens, counter)
-    return statement
+    individual_statement, _ = statement(tokens, counter)
+    return individual_statement
 
 
 def peek(tokens: List[scanner.Token], counter: int, token_type: TokenType) -> bool:
@@ -29,6 +29,34 @@ def expect(
 
     raise Exception(
         f"Expected token with token type {token_type}, got {token.token_type}"
+    )
+
+
+def statement(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int]:
+    match tokens[counter].token_type:
+        case TokenType.VAR:
+            return variable(tokens, counter)
+
+        case TokenType.NAME:
+            return expression(tokens, counter)
+
+        case TokenType.INTEGER:
+            return expression(tokens, counter)
+
+        case _:
+            raise Exception("Exhaustive switch error on token {tokens[counter]}.")
+
+
+def variable(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int]:
+    _, counter = expect(tokens, counter, TokenType.VAR)
+    name, counter = expect(tokens, counter, TokenType.NAME)
+    _, counter = expect(tokens, counter, TokenType.EQUAL)
+    initializer, counter = expect(tokens, counter, TokenType.INTEGER)
+    _, counter = expect(tokens, counter, TokenType.SEMICOLON)
+
+    return (
+        statem.Variable(expr.Name(name.value), expr.Integer(initializer.value)),
+        counter,
     )
 
 
