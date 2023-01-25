@@ -5,7 +5,10 @@ import enum
 
 class TokenType(enum.Enum):
     # Single-character tokens.
+    MINUS = "MINUS"
+    PLUS = "PLUS"
     SEMICOLON = "SEMICOLON"
+    TIMES = "TIMES"
 
     # Keywords
     INTEGER = "INTEGER"
@@ -13,7 +16,12 @@ class TokenType(enum.Enum):
     EOF = "EOF"
 
 
-literals: Dict[str, TokenType] = {";": TokenType.SEMICOLON}
+literals: Dict[str, TokenType] = {
+    "-": TokenType.MINUS,
+    "+": TokenType.PLUS,
+    ";": TokenType.SEMICOLON,
+    "*": TokenType.TIMES,
+}
 
 
 @dataclasses.dataclass
