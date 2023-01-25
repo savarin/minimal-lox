@@ -52,6 +52,6 @@ def scan(source: str) -> List[Token]:
             counter += 1
 
         else:
-            raise Exception(f"Exhaustive switch error on {source[counter]}")
+            raise Exception(f"Exhaustive switch error on character {source[counter]}.")
 
     return tokens + [Token(TokenType.EOF, "EOF", line)]

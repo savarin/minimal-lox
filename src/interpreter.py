@@ -8,7 +8,7 @@ def interpret(statement: statem.Statem) -> int:
             return evaluate(expression)
 
         case _:
-            raise Exception(f"Exhaustive switch error on {str(statement)}")
+            raise Exception(f"Exhaustive switch error on statement {str(statement)}.")
 
 
 def evaluate(expression: expr.Expr) -> int:
@@ -17,4 +17,4 @@ def evaluate(expression: expr.Expr) -> int:
             return int(value)
 
         case _:
-            raise Exception(f"Exhaustive switch error on {str(expression)}")
+            raise Exception(f"Exhaustive switch error on expression {str(expression)}.")
