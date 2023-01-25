@@ -10,6 +10,6 @@ def execute(source: str) -> int:
 
 
 def test_integer() -> None:
-    result = execute("1;")
+    assert execute("1;") == 1
 
-    assert result == 1
+    assert execute("2 + 3;") == 5
