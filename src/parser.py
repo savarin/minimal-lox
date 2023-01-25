@@ -14,10 +14,6 @@ def parse(tokens: List[scanner.Token]) -> statem.Statem:
     return individual_statement
 
 
-def peek(tokens: List[scanner.Token], counter: int, token_type: TokenType) -> bool:
-    return tokens[counter].token_type == token_type
-
-
 def expect(
     tokens: List[scanner.Token], counter: int, token_type: TokenType
 ) -> Tuple[scanner.Token, int]:
@@ -71,18 +67,12 @@ def term(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
     left, counter = factor(tokens, counter)
 
     while True:
-        if peek(tokens, counter, TokenType.PLUS):
-            token, counter = expect(tokens, counter, TokenType.PLUS)
+        if tokens[counter].token_type in [TokenType.PLUS, TokenType.MINUS]:
+            operator = Operator(tokens[counter].value)
+            counter += 1
+
             right, counter = factor(tokens, counter)
-
-            left = expr.Numeric(Operator.PLUS, left, right)
-            continue
-
-        elif peek(tokens, counter, TokenType.MINUS):
-            token, counter = expect(tokens, counter, TokenType.MINUS)
-            right, counter = factor(tokens, counter)
-
-            left = expr.Numeric(Operator.MINUS, left, right)
+            left = expr.Numeric(operator, left, right)
             continue
 
         break
@@ -94,11 +84,12 @@ def factor(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
     left, counter = primary(tokens, counter)
 
     while True:
-        if peek(tokens, counter, TokenType.TIMES):
-            token, counter = expect(tokens, counter, TokenType.TIMES)
-            right, counter = primary(tokens, counter)
+        if tokens[counter] == TokenType.TIMES:
+            operator = Operator(tokens[counter].value)
+            counter += 1
 
-            left = expr.Numeric(Operator.TIMES, left, right)
+            right, counter = primary(tokens, counter)
+            left = expr.Numeric(operator, left, right)
             continue
 
         break

@@ -15,6 +15,14 @@ def format(node: Union[expr.Expr, statem.Statem]) -> str:
         case expr.Integer(value):
             return value
 
+        case statem.Block(statements):
+            result = "{\n    "
+
+            for statement in statements:
+                result += format(statement).replace("\n", "\n    ")
+
+            return result.rstrip("    ") + "}\n"
+
         case statem.Expression(expression):
             return f"{format(expression)};\n"
 

@@ -1,3 +1,4 @@
+from typing import List
 import dataclasses
 
 import expr
@@ -5,6 +6,11 @@ import expr
 
 class Statem:
     ...
+
+
+@dataclasses.dataclass
+class Block(Statem):
+    statements: List[Statem]
 
 
 @dataclasses.dataclass
