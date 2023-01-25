@@ -71,15 +71,14 @@ def term(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
     left, counter = factor(tokens, counter)
 
     while True:
-        if tokens[counter].token_type in [TokenType.PLUS, TokenType.MINUS]:
-            operator = Operator(tokens[counter].value)
-            counter += 1
+        if tokens[counter].token_type not in [TokenType.PLUS, TokenType.MINUS]:
+            break
 
-            right, counter = factor(tokens, counter)
-            left = expr.Numeric(operator, left, right)
-            continue
+        operator = Operator(tokens[counter].value)
+        counter += 1
 
-        break
+        right, counter = factor(tokens, counter)
+        left = expr.Numeric(operator, left, right)
 
     return left, counter
 
@@ -88,20 +87,27 @@ def factor(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
     left, counter = primary(tokens, counter)
 
     while True:
-        if tokens[counter] == TokenType.TIMES:
-            operator = Operator(tokens[counter].value)
-            counter += 1
+        if tokens[counter].token_type != TokenType.TIMES:
+            break
 
-            right, counter = primary(tokens, counter)
-            left = expr.Numeric(operator, left, right)
-            continue
+        operator = Operator(tokens[counter].value)
+        counter += 1
 
-        break
+        right, counter = primary(tokens, counter)
+        left = expr.Numeric(operator, left, right)
 
     return left, counter
 
 
 def primary(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
-    token, counter = expect(tokens, counter, TokenType.INTEGER)
+    match tokens[counter].token_type:
+        case TokenType.INTEGER:
+            token, counter = expect(tokens, counter, TokenType.INTEGER)
+            return expr.Integer(token.value), counter
 
-    return expr.Integer(token.value), counter
+        case TokenType.NAME:
+            token, counter = expect(tokens, counter, TokenType.NAME)
+            return expr.Name(token.value), counter
+
+        case _:
+            raise Exception(f"Exhaustive switch error on token {tokens[counter]}")

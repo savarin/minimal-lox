@@ -76,6 +76,7 @@ def scan(source: str) -> List[Token]:
 
             tokens.append(Token(TokenType.INTEGER, source[start:counter], line))
 
+        # Literals
         elif source[counter] in literals:
             tokens.append(Token(literals[source[counter]], source[counter], line))
             counter += 1
