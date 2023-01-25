@@ -13,7 +13,7 @@ def test_parse() -> None:
         scanner.Token(TokenType.EOF, "EOF", 1),
     ]
 
-    assert parser.parse(tokens) == statem.Expression(expr.Integer("1"))
+    assert parser.parse(tokens) == [statem.Expression(expr.Integer("1"))]
 
     tokens = [
         scanner.Token(TokenType.INTEGER, "2", 1),
@@ -23,9 +23,11 @@ def test_parse() -> None:
         scanner.Token(TokenType.EOF, "EOF", 1),
     ]
 
-    assert parser.parse(tokens) == statem.Expression(
-        expr.Numeric(Operator.PLUS, expr.Integer("2"), expr.Integer("3"))
-    )
+    assert parser.parse(tokens) == [
+        statem.Expression(
+            expr.Numeric(Operator.PLUS, expr.Integer("2"), expr.Integer("3"))
+        )
+    ]
 
     tokens = [
         scanner.Token(TokenType.VAR, "var", 1),
@@ -36,4 +38,4 @@ def test_parse() -> None:
         scanner.Token(TokenType.EOF, "EOF", 1),
     ]
 
-    assert parser.parse(tokens) == statem.Variable(expr.Name("a"), expr.Integer("1"))
+    assert parser.parse(tokens) == [statem.Variable(expr.Name("a"), expr.Integer("1"))]

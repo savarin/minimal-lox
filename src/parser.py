@@ -7,11 +7,15 @@ import scanner
 import statem
 
 
-def parse(tokens: List[scanner.Token]) -> statem.Statem:
+def parse(tokens: List[scanner.Token]) -> List[statem.Statem]:
+    statements: List[statem.Statem] = []
     counter: int = 0
 
-    individual_statement, _ = statement(tokens, counter)
-    return individual_statement
+    while tokens[counter].token_type != TokenType.EOF:
+        individual_statement, counter = statement(tokens, counter)
+        statements.append(individual_statement)
+
+    return statements
 
 
 def expect(
@@ -40,7 +44,7 @@ def statement(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem,
             return expression(tokens, counter)
 
         case _:
-            raise Exception("Exhaustive switch error on token {tokens[counter]}.")
+            raise Exception(f"Exhaustive switch error on token {tokens[counter]}.")
 
 
 def variable(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int]:
