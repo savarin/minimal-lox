@@ -1,11 +1,9 @@
-from scanner import TokenType
 import interpreter
 import parser
 import scanner
-import statem
 
 
-def execute(source: str) -> statem.Statem:
+def execute(source: str) -> int:
     tokens = scanner.scan(source)
     statement = parser.parse(tokens)
     return interpreter.interpret(statement)
