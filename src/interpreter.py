@@ -14,4 +14,7 @@ def interpret(statement: statem.Statem) -> int:
 def evaluate(expression: expr.Expr) -> int:
     match expression:
         case expr.Integer(value):
-            return value
+            return int(value)
+
+        case _:
+            raise Exception(f"Exhaustive switch error on {str(expression)}")
