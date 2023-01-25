@@ -15,3 +15,8 @@ def test_format() -> None:
         )
         == "2 + 3;\n"
     )
+
+    assert (
+        formatter.format(statem.Variable(expr.Name("a"), expr.Integer("1")))
+        == "var a = 1;\n"
+    )

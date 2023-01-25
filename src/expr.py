@@ -18,6 +18,11 @@ class Integer(Expr):
 
 
 @dataclasses.dataclass
+class Name(Expr):
+    text: str
+
+
+@dataclasses.dataclass
 class Numeric(Expr):
     operator: Operator
     left: Expr
