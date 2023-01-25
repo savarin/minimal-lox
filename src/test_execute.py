@@ -1,9 +1,11 @@
+from typing import Optional
+
 import interpreter
 import parser
 import scanner
 
 
-def execute(source: str) -> int:
+def execute(source: str) -> Optional[int]:
     tokens = scanner.scan(source)
     statement = parser.parse(tokens)
     return interpreter.interpret(statement)
