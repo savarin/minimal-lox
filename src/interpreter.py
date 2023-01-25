@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 import expr
 import statem
@@ -7,16 +7,33 @@ import statem
 environment: Dict[str, int] = {}
 
 
-def interpret(statement: statem.Statem) -> Optional[int]:
+def interpret(statements: List[statem.Statem]) -> List[Optional[int]]:
+    result: List[Optional[int]] = []
+
+    for statement in statements:
+        result += execute(statement)
+
+    return result
+
+
+def execute(statement: statem.Statem) -> List[Optional[int]]:
     match statement:
+        case statem.Block(statements):
+            result: List[Optional[int]] = []
+
+            for individual_statement in statements:
+                result += execute(individual_statement)
+
+            return result
+
         case statem.Expression(expression):
-            return evaluate(expression)
+            return [evaluate(expression)]
 
         case statem.Variable(name, initializer):
             value = evaluate(initializer)
             environment[name.text] = value
 
-            return None
+            return [None]
 
         case _:
             raise Exception(f"Exhaustive switch error on statement {str(statement)}.")
