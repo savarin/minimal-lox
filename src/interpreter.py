@@ -29,9 +29,20 @@ def execute(statement: statem.Statem) -> List[Optional[int]]:
         case statem.Expression(expression):
             return [evaluate(expression)]
 
+        case statem.If(condition, then_branch, else_branch):
+            if_eval = evaluate(condition)
+
+            if if_eval is True:
+                return execute(then_branch)
+
+            elif else_branch is not None:
+                return execute(else_branch)
+
+            return []
+
         case statem.Variable(name, initializer):
-            value = evaluate(initializer)
-            environment[name.text] = value
+            variable_eval = evaluate(initializer)
+            environment[name.text] = variable_eval
 
             return [None]
 

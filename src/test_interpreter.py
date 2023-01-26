@@ -35,3 +35,13 @@ def test_interpret() -> None:
             )
         ]
     ) == [False]
+
+    assert interpreter.interpret(
+        [
+            statem.If(
+                expr.Relational(Operator.EQUAL, expr.Integer("0"), expr.Integer("1")),
+                statem.Block([statem.Expression(expr.Integer("2"))]),
+                statem.Block([statem.Expression(expr.Integer("3"))]),
+            )
+        ]
+    ) == [3]
