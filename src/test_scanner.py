@@ -64,7 +64,7 @@ def test_scan() -> None:
     assert tokens[14] == scanner.Token(TokenType.BRACE_RIGHT, "}", 1)
     assert tokens[15] == scanner.Token(TokenType.EOF, "EOF", 1)
 
-    tokens = scanner.scan("func add(x, y) { return x + y; }")
+    tokens = scanner.scan("func add(x, y) { return x + y; } add(2, 3);")
 
     assert tokens[0] == scanner.Token(TokenType.FUNC, "func", 1)
     assert tokens[1] == scanner.Token(TokenType.NAME, "add", 1)
@@ -80,4 +80,11 @@ def test_scan() -> None:
     assert tokens[11] == scanner.Token(TokenType.NAME, "y", 1)
     assert tokens[12] == scanner.Token(TokenType.SEMICOLON, ";", 1)
     assert tokens[13] == scanner.Token(TokenType.BRACE_RIGHT, "}", 1)
-    assert tokens[14] == scanner.Token(TokenType.EOF, "EOF", 1)
+    assert tokens[14] == scanner.Token(TokenType.NAME, "add", 1)
+    assert tokens[15] == scanner.Token(TokenType.PAREN_LEFT, "(", 1)
+    assert tokens[16] == scanner.Token(TokenType.INTEGER, "2", 1)
+    assert tokens[17] == scanner.Token(TokenType.COMMA, ",", 1)
+    assert tokens[18] == scanner.Token(TokenType.INTEGER, "3", 1)
+    assert tokens[19] == scanner.Token(TokenType.PAREN_RIGHT, ")", 1)
+    assert tokens[20] == scanner.Token(TokenType.SEMICOLON, ";", 1)
+    assert tokens[21] == scanner.Token(TokenType.EOF, "EOF", 1)

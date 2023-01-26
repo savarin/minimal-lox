@@ -37,11 +37,17 @@ def statement(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem,
         case TokenType.BRACE_LEFT:
             return block(tokens, counter)
 
+        case TokenType.FUNC:
+            return function(tokens, counter)
+
         case TokenType.IF:
             return if_statement(tokens, counter)
 
         case TokenType.VAR:
             return variable(tokens, counter)
+
+        case TokenType.RETURN:
+            return return_statement(tokens, counter)
 
         case TokenType.NAME:
             return expression(tokens, counter)
@@ -65,6 +71,26 @@ def block(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int
     _, counter = expect(tokens, counter, TokenType.BRACE_RIGHT)
 
     return statem.Block(statements), counter
+
+
+def function(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int]:
+    _, counter = expect(tokens, counter, TokenType.FUNC)
+    name, counter = expect(tokens, counter, TokenType.NAME)
+    _, counter = expect(tokens, counter, TokenType.PAREN_LEFT)
+
+    parameters: List[expr.Name] = []
+
+    while tokens[counter].token_type != TokenType.PAREN_RIGHT:
+        parameter, counter = expect(tokens, counter, TokenType.NAME)
+        parameters.append(expr.Name(parameter.value))
+
+        if tokens[counter].token_type == TokenType.COMMA:
+            _, counter = expect(tokens, counter, TokenType.COMMA)
+
+    _, counter = expect(tokens, counter, TokenType.PAREN_RIGHT)
+    body, counter = statement(tokens, counter)
+
+    return statem.Function(expr.Name(name.value), parameters, body), counter
 
 
 def if_statement(
@@ -96,6 +122,16 @@ def variable(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, 
         statem.Variable(expr.Name(name.value), expr.Integer(initializer.value)),
         counter,
     )
+
+
+def return_statement(
+    tokens: List[scanner.Token], counter: int
+) -> Tuple[statem.Statem, int]:
+    _, counter = expect(tokens, counter, TokenType.RETURN)
+    value, counter = relational(tokens, counter)
+    _, counter = expect(tokens, counter, TokenType.SEMICOLON)
+
+    return statem.Return(value), counter
 
 
 def expression(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int]:
@@ -142,7 +178,7 @@ def term(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
 
 
 def factor(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
-    left, counter = primary(tokens, counter)
+    left, counter = call(tokens, counter)
 
     while True:
         if tokens[counter].token_type != TokenType.TIMES:
@@ -151,10 +187,32 @@ def factor(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
         operator = Operator(tokens[counter].value)
         counter += 1
 
-        right, counter = primary(tokens, counter)
+        right, counter = call(tokens, counter)
         left = expr.Numeric(operator, left, right)
 
     return left, counter
+
+
+def call(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
+    primary_expression, counter = primary(tokens, counter)
+
+    if tokens[counter].token_type != TokenType.PAREN_LEFT:
+        return primary_expression, counter
+
+    _, counter = expect(tokens, counter, TokenType.PAREN_LEFT)
+
+    arguments: List[expr.Expr] = []
+
+    while tokens[counter].token_type != TokenType.PAREN_RIGHT:
+        argument, counter = relational(tokens, counter)
+        arguments.append(argument)
+
+        if tokens[counter].token_type == TokenType.COMMA:
+            _, counter = expect(tokens, counter, TokenType.COMMA)
+
+    _, counter = expect(tokens, counter, TokenType.PAREN_RIGHT)
+
+    return expr.Call(primary_expression, arguments), counter
 
 
 def primary(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:

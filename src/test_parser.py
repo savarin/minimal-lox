@@ -96,3 +96,45 @@ def test_parse() -> None:
             statem.Block([statem.Expression(expr.Integer("3"))]),
         )
     ]
+
+    tokens = [
+        scanner.Token(TokenType.FUNC, "func", 1),
+        scanner.Token(TokenType.NAME, "add", 1),
+        scanner.Token(TokenType.PAREN_LEFT, "(", 1),
+        scanner.Token(TokenType.NAME, "x", 1),
+        scanner.Token(TokenType.COMMA, ",", 1),
+        scanner.Token(TokenType.NAME, "y", 1),
+        scanner.Token(TokenType.PAREN_RIGHT, ")", 1),
+        scanner.Token(TokenType.BRACE_LEFT, "{", 1),
+        scanner.Token(TokenType.RETURN, "return", 1),
+        scanner.Token(TokenType.NAME, "x", 1),
+        scanner.Token(TokenType.PLUS, "+", 1),
+        scanner.Token(TokenType.NAME, "y", 1),
+        scanner.Token(TokenType.SEMICOLON, ";", 1),
+        scanner.Token(TokenType.BRACE_RIGHT, "}", 1),
+        scanner.Token(TokenType.NAME, "add", 1),
+        scanner.Token(TokenType.PAREN_LEFT, "(", 1),
+        scanner.Token(TokenType.INTEGER, "2", 1),
+        scanner.Token(TokenType.COMMA, ",", 1),
+        scanner.Token(TokenType.INTEGER, "3", 1),
+        scanner.Token(TokenType.PAREN_RIGHT, ")", 1),
+        scanner.Token(TokenType.SEMICOLON, ";", 1),
+        scanner.Token(TokenType.EOF, "EOF", 1),
+    ]
+
+    assert parser.parse(tokens) == [
+        statem.Function(
+            expr.Name("add"),
+            [expr.Name("x"), expr.Name("y")],
+            statem.Block(
+                [
+                    statem.Return(
+                        expr.Numeric(Operator.PLUS, expr.Name("x"), expr.Name("y"))
+                    )
+                ]
+            ),
+        ),
+        statem.Expression(
+            expr.Call(expr.Name("add"), [expr.Integer("2"), expr.Integer("3")]),
+        ),
+    ]
