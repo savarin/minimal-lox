@@ -19,3 +19,5 @@ def test_integer() -> None:
     assert execute("var a = 1; a;") == [None, 1]
 
     assert execute("0 = 1;") == [False]
+
+    assert execute("if (0 = 1) {2;} else {3;}") == [3]
