@@ -29,3 +29,20 @@ def test_format() -> None:
         )
         == "0 = 1;\n"
     )
+
+    assert (
+        formatter.format(
+            statem.If(
+                expr.Relational(Operator.EQUAL, expr.Integer("0"), expr.Integer("1")),
+                statem.Block([statem.Expression(expr.Integer("2"))]),
+                statem.Block([statem.Expression(expr.Integer("3"))]),
+            )
+        )
+        == """\
+if (0 = 1) {
+    2;
+} else {
+    3;
+}
+"""
+    )

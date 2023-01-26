@@ -29,6 +29,18 @@ def format(node: Union[expr.Expr, statem.Statem]) -> str:
         case statem.Expression(expression):
             return f"{format(expression)};\n"
 
+        case statem.If(condition, then_branch, else_branch):
+            consequent = f"if ({format(condition)}) {format(then_branch)}"
+
+            alternate = (
+                f" else {format(else_branch)}" if else_branch is not None else ""
+            )
+
+            if else_branch is not None:
+                consequent = consequent.rstrip("\n")
+
+            return consequent + alternate
+
         case statem.Variable(name, initializer):
             return f"var {format(name)} = {format(initializer)};\n"
 

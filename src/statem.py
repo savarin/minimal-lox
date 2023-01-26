@@ -19,6 +19,13 @@ class Expression(Statem):
 
 
 @dataclasses.dataclass
+class If(Statem):
+    condition: expr.Expr
+    then_branch: Block
+    else_branch: Block
+
+
+@dataclasses.dataclass
 class Variable(Statem):
     name: expr.Name
     initializer: expr.Expr
