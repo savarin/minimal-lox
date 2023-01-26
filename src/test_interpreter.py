@@ -14,3 +14,24 @@ def test_interpret() -> None:
             )
         ]
     ) == [5]
+
+    assert interpreter.interpret(
+        [statem.Variable(expr.Name("a"), expr.Integer("1"))]
+    ) == [None]
+
+    assert (
+        interpreter.interpret(
+            [
+                statem.Variable(expr.Name("a"), expr.Integer("1")),
+                statem.Expression(expr.Name("a")),
+            ]
+        )
+    ) == [None, 1]
+
+    assert interpreter.interpret(
+        [
+            statem.Expression(
+                expr.Relational(Operator.EQUAL, expr.Integer("0"), expr.Integer("1"))
+            )
+        ]
+    ) == [False]

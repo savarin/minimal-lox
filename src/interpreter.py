@@ -39,7 +39,7 @@ def execute(statement: statem.Statem) -> List[Optional[int]]:
             raise Exception(f"Exhaustive switch error on statement {str(statement)}.")
 
 
-def evaluate(expression: expr.Expr) -> int:
+def evaluate(expression: expr.Expr) -> int | bool:
     match expression:
         case expr.Integer(value):
             return int(value)
@@ -52,6 +52,13 @@ def evaluate(expression: expr.Expr) -> int:
             right_eval = evaluate(right)
 
             return eval(f"{left_eval} {operator.value} {right_eval}")
+
+        case expr.Relational(operator, left, right):
+            left_eval = evaluate(left)
+            right_eval = evaluate(right)
+            relation = "==" if operator.value == "=" else operator.value
+
+            return eval(f"{left_eval} {relation} {right_eval}")
 
         case _:
             raise Exception(f"Exhaustive switch error on expression {str(expression)}.")
