@@ -49,10 +49,7 @@ def statement(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem,
         case TokenType.RETURN:
             return return_statement(tokens, counter)
 
-        case TokenType.NAME:
-            return expression_statement(tokens, counter)
-
-        case TokenType.INTEGER:
+        case TokenType.NAME | TokenType.INTEGER:
             return expression_statement(tokens, counter)
 
         case _:
@@ -215,7 +212,7 @@ def factor(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
 
 
 def call(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
-    # name ( parameters )
+    # name ( arguments )
     primary_expression, counter = primary(tokens, counter)
 
     if tokens[counter].token_type != TokenType.PAREN_LEFT:
