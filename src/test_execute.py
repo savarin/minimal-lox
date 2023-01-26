@@ -17,3 +17,5 @@ def test_integer() -> None:
     assert execute("2 + 3;") == [5]
 
     assert execute("var a = 1; a;") == [None, 1]
+
+    assert execute("0 = 1;") == [False]
