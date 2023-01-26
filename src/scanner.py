@@ -24,6 +24,7 @@ class TokenType(enum.Enum):
     TIMES = "TIMES"
 
     # Keywords
+    ELSE = "ELSE"
     IF = "IF"
     VAR = "VAR"
 
@@ -46,6 +47,7 @@ literals: Dict[str, TokenType] = {
 
 
 keywords: Dict[str, TokenType] = {
+    "else": TokenType.ELSE,
     "if": TokenType.IF,
     "var": TokenType.VAR,
 }

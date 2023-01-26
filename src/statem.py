@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 import dataclasses
 
 import expr
@@ -21,8 +21,8 @@ class Expression(Statem):
 @dataclasses.dataclass
 class If(Statem):
     condition: expr.Expr
-    then_branch: Block
-    else_branch: Block
+    then_branch: Statem
+    else_branch: Optional[Statem]
 
 
 @dataclasses.dataclass

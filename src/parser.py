@@ -34,6 +34,12 @@ def expect(
 
 def statement(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int]:
     match tokens[counter].token_type:
+        case TokenType.BRACE_LEFT:
+            return block(tokens, counter)
+
+        case TokenType.IF:
+            return if_statement(tokens, counter)
+
         case TokenType.VAR:
             return variable(tokens, counter)
 
@@ -45,6 +51,38 @@ def statement(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem,
 
         case _:
             raise Exception(f"Exhaustive switch error on token {tokens[counter]}.")
+
+
+def block(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int]:
+    statements: List[statem.Statem] = []
+
+    _, counter = expect(tokens, counter, TokenType.BRACE_LEFT)
+
+    while tokens[counter].token_type != TokenType.BRACE_RIGHT:
+        individual_statement, counter = statement(tokens, counter)
+        statements.append(individual_statement)
+
+    _, counter = expect(tokens, counter, TokenType.BRACE_RIGHT)
+
+    return statem.Block(statements), counter
+
+
+def if_statement(
+    tokens: List[scanner.Token], counter: int
+) -> Tuple[statem.Statem, int]:
+    _, counter = expect(tokens, counter, TokenType.IF)
+    _, counter = expect(tokens, counter, TokenType.PAREN_LEFT)
+    condition, counter = relational(tokens, counter)
+    _, counter = expect(tokens, counter, TokenType.PAREN_RIGHT)
+    then_branch, counter = statement(tokens, counter)
+
+    else_branch = None
+
+    if tokens[counter].token_type == TokenType.ELSE:
+        _, counter = expect(tokens, counter, TokenType.ELSE)
+        else_branch, counter = statement(tokens, counter)
+
+    return statem.If(condition, then_branch, else_branch), counter
 
 
 def variable(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int]:

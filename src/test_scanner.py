@@ -57,7 +57,7 @@ def test_scan() -> None:
     assert tokens[7] == scanner.Token(TokenType.INTEGER, "2", 1)
     assert tokens[8] == scanner.Token(TokenType.SEMICOLON, ";", 1)
     assert tokens[9] == scanner.Token(TokenType.BRACE_RIGHT, "}", 1)
-    assert tokens[10] == scanner.Token(TokenType.NAME, "else", 1)
+    assert tokens[10] == scanner.Token(TokenType.ELSE, "else", 1)
     assert tokens[11] == scanner.Token(TokenType.BRACE_LEFT, "{", 1)
     assert tokens[12] == scanner.Token(TokenType.INTEGER, "3", 1)
     assert tokens[13] == scanner.Token(TokenType.SEMICOLON, ";", 1)

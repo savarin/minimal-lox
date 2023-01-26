@@ -69,3 +69,30 @@ def test_parse() -> None:
             expr.Relational(Operator.EQUAL, expr.Integer("0"), expr.Integer("1"))
         )
     ]
+
+    tokens = [
+        scanner.Token(TokenType.IF, "if", 1),
+        scanner.Token(TokenType.PAREN_LEFT, "(", 1),
+        scanner.Token(TokenType.INTEGER, "0", 1),
+        scanner.Token(TokenType.EQUAL, "=", 1),
+        scanner.Token(TokenType.INTEGER, "1", 1),
+        scanner.Token(TokenType.PAREN_RIGHT, ")", 1),
+        scanner.Token(TokenType.BRACE_LEFT, "{", 1),
+        scanner.Token(TokenType.INTEGER, "2", 1),
+        scanner.Token(TokenType.SEMICOLON, ";", 1),
+        scanner.Token(TokenType.BRACE_RIGHT, "}", 1),
+        scanner.Token(TokenType.ELSE, "else", 1),
+        scanner.Token(TokenType.BRACE_LEFT, "{", 1),
+        scanner.Token(TokenType.INTEGER, "3", 1),
+        scanner.Token(TokenType.SEMICOLON, ";", 1),
+        scanner.Token(TokenType.BRACE_RIGHT, "}", 1),
+        scanner.Token(TokenType.EOF, "EOF", 1),
+    ]
+
+    assert parser.parse(tokens) == [
+        statem.If(
+            expr.Relational(Operator.EQUAL, expr.Integer("0"), expr.Integer("1")),
+            statem.Block([statem.Expression(expr.Integer("2"))]),
+            statem.Block([statem.Expression(expr.Integer("3"))]),
+        )
+    ]
