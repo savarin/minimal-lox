@@ -22,7 +22,7 @@ class Expression(Statem):
 class Function(Statem):
     name: expr.Name
     parameters: List[expr.Name]
-    body: Statem
+    body: Block
 
 
 @dataclasses.dataclass

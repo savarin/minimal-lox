@@ -1,10 +1,16 @@
 from typing import Dict, List, Optional
+import dataclasses
 
 import expr
 import statem
 
 
-environment: Dict[str, int] = {}
+@dataclasses.dataclass
+class Return(Exception):
+    value: Optional[int]
+
+
+environment: Dict[str, int | statem.Function] = {}
 
 
 def interpret(statements: List[statem.Statem]) -> List[Optional[int]]:
@@ -27,7 +33,15 @@ def execute(statement: statem.Statem) -> List[Optional[int]]:
             return result
 
         case statem.Expression(expression):
-            return [evaluate(expression)]
+            expression_eval = evaluate(expression)
+            assert not isinstance(expression_eval, statem.Function)
+
+            return [expression_eval]
+
+        case statem.Function(name, _, _):
+            environment[name.text] = statement
+
+            return [None]
 
         case statem.If(condition, then_branch, else_branch):
             if_eval = evaluate(condition)
@@ -40,6 +54,12 @@ def execute(statement: statem.Statem) -> List[Optional[int]]:
 
             return []
 
+        case statem.Return(expression):
+            return_eval = evaluate(expression)
+            assert not isinstance(return_eval, statem.Function)
+
+            raise Return(return_eval)
+
         case statem.Variable(name, initializer):
             variable_eval = evaluate(initializer)
             environment[name.text] = variable_eval
@@ -50,8 +70,21 @@ def execute(statement: statem.Statem) -> List[Optional[int]]:
             raise Exception(f"Exhaustive switch error on statement {str(statement)}.")
 
 
-def evaluate(expression: expr.Expr) -> int | bool:
+def evaluate(expression: expr.Expr) -> int | bool | statem.Function:
     match expression:
+        case expr.Call(callee, arguments):
+            call_eval = evaluate(callee)
+            args: List[int] = []
+
+            for argument in arguments:
+                argument_eval = evaluate(argument)
+                assert isinstance(argument_eval, int)
+
+                args.append(argument_eval)
+
+            assert isinstance(call_eval, statem.Function)
+            return call(call_eval, args)
+
         case expr.Integer(value):
             return int(value)
 
@@ -73,3 +106,20 @@ def evaluate(expression: expr.Expr) -> int | bool:
 
         case _:
             raise Exception(f"Exhaustive switch error on expression {str(expression)}.")
+
+
+def call(callee: statem.Function, arguments: List[int]) -> int:
+    for i, parameter in enumerate(callee.parameters):
+        environment[parameter.text] = arguments[i]
+
+    try:
+        execute(callee.body)
+
+    except Return as return_value:
+        result = return_value.value
+
+    for parameter in callee.parameters:
+        del environment[parameter.text]
+
+    assert isinstance(result, int)
+    return result

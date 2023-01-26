@@ -45,3 +45,22 @@ def test_interpret() -> None:
             )
         ]
     ) == [3]
+
+    assert interpreter.interpret(
+        [
+            statem.Function(
+                expr.Name("add"),
+                [expr.Name("x"), expr.Name("y")],
+                statem.Block(
+                    [
+                        statem.Return(
+                            expr.Numeric(Operator.PLUS, expr.Name("x"), expr.Name("y"))
+                        )
+                    ]
+                ),
+            ),
+            statem.Expression(
+                expr.Call(expr.Name("add"), [expr.Integer("2"), expr.Integer("3")]),
+            ),
+        ]
+    ) == [None, 5]
