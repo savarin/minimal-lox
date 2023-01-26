@@ -1,3 +1,4 @@
+from typing import List
 import dataclasses
 import enum
 
@@ -13,6 +14,12 @@ class Operator(enum.Enum):
 
 class Expr:
     ...
+
+
+@dataclasses.dataclass
+class Call(Expr):
+    callee: Expr
+    arguments: List[Expr]
 
 
 @dataclasses.dataclass

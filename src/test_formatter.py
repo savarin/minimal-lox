@@ -46,3 +46,33 @@ if (0 = 1) {
 }
 """
     )
+
+    assert (
+        formatter.format(
+            statem.Function(
+                expr.Name("add"),
+                [expr.Name("x"), expr.Name("y")],
+                statem.Block(
+                    [
+                        statem.Return(
+                            expr.Numeric(Operator.PLUS, expr.Name("x"), expr.Name("y"))
+                        )
+                    ]
+                ),
+            )
+        )
+        == """\
+func add(x, y) {
+    return x + y;
+}
+"""
+    )
+
+    assert (
+        formatter.format(
+            statem.Expression(
+                expr.Call(expr.Name("add"), [expr.Integer("2"), expr.Name("3")])
+            )
+        )
+        == """add(2, 3);\n"""
+    )

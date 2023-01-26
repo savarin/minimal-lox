@@ -6,6 +6,11 @@ import statem
 
 def format(node: Union[expr.Expr, statem.Statem]) -> str:
     match node:
+        case expr.Call(callee, arguments):
+            args = ", ".join([f"{format(arg)}" for arg in arguments])
+
+            return f"{format(callee)}({args})"
+
         case expr.Integer(value):
             return value
 
@@ -29,6 +34,11 @@ def format(node: Union[expr.Expr, statem.Statem]) -> str:
         case statem.Expression(expression):
             return f"{format(expression)};\n"
 
+        case statem.Function(name, parameters, body):
+            params = ", ".join([f"{format(parameter)}" for parameter in parameters])
+
+            return f"func {format(name)}({params}) {format(body)}"
+
         case statem.If(condition, then_branch, else_branch):
             consequent = f"if ({format(condition)}) {format(then_branch)}"
 
@@ -40,6 +50,9 @@ def format(node: Union[expr.Expr, statem.Statem]) -> str:
                 consequent = consequent.rstrip("\n")
 
             return consequent + alternate
+
+        case statem.Return(expression):
+            return f"return {format(expression)};\n"
 
         case statem.Variable(name, initializer):
             return f"var {format(name)} = {format(initializer)};\n"

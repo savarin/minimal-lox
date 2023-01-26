@@ -19,6 +19,13 @@ class Expression(Statem):
 
 
 @dataclasses.dataclass
+class Function(Statem):
+    name: expr.Name
+    parameters: List[expr.Name]
+    body: Statem
+
+
+@dataclasses.dataclass
 class If(Statem):
     condition: expr.Expr
     then_branch: Statem
@@ -29,3 +36,8 @@ class If(Statem):
 class Variable(Statem):
     name: expr.Name
     initializer: expr.Expr
+
+
+@dataclasses.dataclass
+class Return(Statem):
+    expression: expr.Expr
