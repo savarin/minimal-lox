@@ -25,6 +25,8 @@ class TokenType(enum.Enum):
 
 literals: Dict[str, TokenType] = {
     "=": TokenType.EQUAL,
+    ">": TokenType.GREATER,
+    "<": TokenType.LESS,
     "-": TokenType.MINUS,
     "+": TokenType.PLUS,
     ";": TokenType.SEMICOLON,

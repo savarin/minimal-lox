@@ -61,10 +61,30 @@ def variable(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, 
 
 
 def expression(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int]:
-    value, counter = term(tokens, counter)
+    value, counter = relational(tokens, counter)
     _, counter = expect(tokens, counter, TokenType.SEMICOLON)
 
     return statem.Expression(value), counter
+
+
+def relational(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
+    left, counter = term(tokens, counter)
+
+    while True:
+        if tokens[counter].token_type not in [
+            TokenType.EQUAL,
+            TokenType.GREATER,
+            TokenType.LESS,
+        ]:
+            break
+
+        operator = Operator(tokens[counter].value)
+        counter += 1
+
+        right, counter = term(tokens, counter)
+        left = expr.Relational(operator, left, right)
+
+    return left, counter
 
 
 def term(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:

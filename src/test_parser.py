@@ -55,3 +55,17 @@ def test_parse() -> None:
         statem.Variable(expr.Name("a"), expr.Integer("1")),
         statem.Expression(expr.Name("a")),
     ]
+
+    tokens = [
+        scanner.Token(TokenType.INTEGER, "0", 1),
+        scanner.Token(TokenType.EQUAL, "=", 1),
+        scanner.Token(TokenType.INTEGER, "1", 1),
+        scanner.Token(TokenType.SEMICOLON, ";", 1),
+        scanner.Token(TokenType.EOF, "EOF", 1),
+    ]
+
+    assert parser.parse(tokens) == [
+        statem.Expression(
+            expr.Relational(Operator.EQUAL, expr.Integer("0"), expr.Integer("1"))
+        )
+    ]
