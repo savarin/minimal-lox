@@ -3,8 +3,11 @@ import enum
 
 
 class Operator(enum.Enum):
-    PLUS = "+"
+    EQUAL = "="
+    GREATER = ">"
+    LESS = "<"
     MINUS = "-"
+    PLUS = "+"
     TIMES = "*"
 
 
@@ -24,6 +27,13 @@ class Name(Expr):
 
 @dataclasses.dataclass
 class Numeric(Expr):
+    operator: Operator
+    left: Expr
+    right: Expr
+
+
+@dataclasses.dataclass
+class Relational(Expr):
     operator: Operator
     left: Expr
     right: Expr

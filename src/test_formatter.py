@@ -20,3 +20,12 @@ def test_format() -> None:
         formatter.format(statem.Variable(expr.Name("a"), expr.Integer("1")))
         == "var a = 1;\n"
     )
+
+    assert (
+        formatter.format(
+            statem.Expression(
+                expr.Relational(Operator.EQUAL, expr.Integer("0"), expr.Integer("1"))
+            )
+        )
+        == "0 = 1;\n"
+    )
