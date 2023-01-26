@@ -22,14 +22,14 @@ class Expression(Statem):
 class Function(Statem):
     name: expr.Name
     parameters: List[expr.Name]
-    body: Statem
+    body: Block
 
 
 @dataclasses.dataclass
 class If(Statem):
     condition: expr.Expr
-    then_branch: Statem
-    else_branch: Optional[Statem]
+    then_branch: Block
+    else_branch: Optional[Block]
 
 
 @dataclasses.dataclass

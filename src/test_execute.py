@@ -21,3 +21,5 @@ def test_integer() -> None:
     assert execute("0 = 1;") == [False]
 
     assert execute("if (0 = 1) {2;} else {3;}") == [3]
+
+    assert execute("func add(x, y) { return x + y; } add(2, 3);") == [None, 5]

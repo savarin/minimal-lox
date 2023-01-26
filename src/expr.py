@@ -17,19 +17,19 @@ class Expr:
 
 
 @dataclasses.dataclass
+class Name(Expr):
+    text: str
+
+
+@dataclasses.dataclass
 class Call(Expr):
-    callee: Expr
+    callee: Name
     arguments: List[Expr]
 
 
 @dataclasses.dataclass
 class Integer(Expr):
     value: str
-
-
-@dataclasses.dataclass
-class Name(Expr):
-    text: str
 
 
 @dataclasses.dataclass

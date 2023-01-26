@@ -50,16 +50,17 @@ def statement(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem,
             return return_statement(tokens, counter)
 
         case TokenType.NAME:
-            return expression(tokens, counter)
+            return expression_statement(tokens, counter)
 
         case TokenType.INTEGER:
-            return expression(tokens, counter)
+            return expression_statement(tokens, counter)
 
         case _:
             raise Exception(f"Exhaustive switch error on token {tokens[counter]}.")
 
 
 def block(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int]:
+    # { statements }
     statements: List[statem.Statem] = []
 
     _, counter = expect(tokens, counter, TokenType.BRACE_LEFT)
@@ -74,6 +75,7 @@ def block(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int
 
 
 def function(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int]:
+    # func name ( parameters ) { body }
     _, counter = expect(tokens, counter, TokenType.FUNC)
     name, counter = expect(tokens, counter, TokenType.NAME)
     _, counter = expect(tokens, counter, TokenType.PAREN_LEFT)
@@ -88,30 +90,36 @@ def function(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, 
             _, counter = expect(tokens, counter, TokenType.COMMA)
 
     _, counter = expect(tokens, counter, TokenType.PAREN_RIGHT)
-    body, counter = statement(tokens, counter)
+    body, counter = block(tokens, counter)
 
+    assert isinstance(body, statem.Block)
     return statem.Function(expr.Name(name.value), parameters, body), counter
 
 
 def if_statement(
-    tokens: List[scanner.Token], counter: int
+    # if ( condition ) { then_branch } [ else_branch ]
+    tokens: List[scanner.Token],
+    counter: int,
 ) -> Tuple[statem.Statem, int]:
     _, counter = expect(tokens, counter, TokenType.IF)
     _, counter = expect(tokens, counter, TokenType.PAREN_LEFT)
-    condition, counter = relational(tokens, counter)
+    condition, counter = expression(tokens, counter)
     _, counter = expect(tokens, counter, TokenType.PAREN_RIGHT)
-    then_branch, counter = statement(tokens, counter)
+    then_branch, counter = block(tokens, counter)
 
     else_branch = None
 
     if tokens[counter].token_type == TokenType.ELSE:
         _, counter = expect(tokens, counter, TokenType.ELSE)
-        else_branch, counter = statement(tokens, counter)
+        else_branch, counter = block(tokens, counter)
 
+    assert isinstance(then_branch, statem.Block)
+    assert isinstance(else_branch, statem.Block) or else_branch is None
     return statem.If(condition, then_branch, else_branch), counter
 
 
 def variable(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int]:
+    # var name initializer ;
     _, counter = expect(tokens, counter, TokenType.VAR)
     name, counter = expect(tokens, counter, TokenType.NAME)
     _, counter = expect(tokens, counter, TokenType.EQUAL)
@@ -125,23 +133,34 @@ def variable(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, 
 
 
 def return_statement(
-    tokens: List[scanner.Token], counter: int
+    # return expression ;
+    tokens: List[scanner.Token],
+    counter: int,
 ) -> Tuple[statem.Statem, int]:
     _, counter = expect(tokens, counter, TokenType.RETURN)
-    value, counter = relational(tokens, counter)
+    value, counter = expression(tokens, counter)
     _, counter = expect(tokens, counter, TokenType.SEMICOLON)
 
     return statem.Return(value), counter
 
 
-def expression(tokens: List[scanner.Token], counter: int) -> Tuple[statem.Statem, int]:
-    value, counter = relational(tokens, counter)
+def expression_statement(
+    # expression ;
+    tokens: List[scanner.Token],
+    counter: int,
+) -> Tuple[statem.Statem, int]:
+    value, counter = expression(tokens, counter)
     _, counter = expect(tokens, counter, TokenType.SEMICOLON)
 
     return statem.Expression(value), counter
 
 
+def expression(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
+    return relational(tokens, counter)
+
+
 def relational(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
+    # left = right
     left, counter = term(tokens, counter)
 
     while True:
@@ -162,6 +181,7 @@ def relational(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, in
 
 
 def term(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
+    # left + right
     left, counter = factor(tokens, counter)
 
     while True:
@@ -178,6 +198,7 @@ def term(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
 
 
 def factor(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
+    # left * right
     left, counter = call(tokens, counter)
 
     while True:
@@ -194,6 +215,7 @@ def factor(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
 
 
 def call(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
+    # name ( parameters )
     primary_expression, counter = primary(tokens, counter)
 
     if tokens[counter].token_type != TokenType.PAREN_LEFT:
@@ -204,7 +226,7 @@ def call(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
     arguments: List[expr.Expr] = []
 
     while tokens[counter].token_type != TokenType.PAREN_RIGHT:
-        argument, counter = relational(tokens, counter)
+        argument, counter = expression(tokens, counter)
         arguments.append(argument)
 
         if tokens[counter].token_type == TokenType.COMMA:
@@ -212,6 +234,7 @@ def call(tokens: List[scanner.Token], counter: int) -> Tuple[expr.Expr, int]:
 
     _, counter = expect(tokens, counter, TokenType.PAREN_RIGHT)
 
+    assert isinstance(primary_expression, expr.Name)
     return expr.Call(primary_expression, arguments), counter
 
 
