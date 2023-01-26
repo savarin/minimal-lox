@@ -7,12 +7,13 @@ class TokenType(enum.Enum):
     # Types
     INTEGER = "INTEGER"
 
-    # Identifiers
+    # Names
     NAME = "NAME"
 
     # Single-character tokens.
     BRACE_LEFT = "BRACE_LEFT"
     BRACE_RIGHT = "BRACE_RIGHT"
+    COMMA = "COMMA"
     EQUAL = "EQUAL"
     GREATER = "GREATER"
     LESS = "LESS"
@@ -24,8 +25,10 @@ class TokenType(enum.Enum):
     TIMES = "TIMES"
 
     # Keywords
+    FUNC = "FUNC"
     ELSE = "ELSE"
     IF = "IF"
+    RETURN = "RETURN"
     VAR = "VAR"
 
     EOF = "EOF"
@@ -34,6 +37,7 @@ class TokenType(enum.Enum):
 literals: Dict[str, TokenType] = {
     "{": TokenType.BRACE_LEFT,
     "}": TokenType.BRACE_RIGHT,
+    ",": TokenType.COMMA,
     "=": TokenType.EQUAL,
     ">": TokenType.GREATER,
     "<": TokenType.LESS,
@@ -47,8 +51,10 @@ literals: Dict[str, TokenType] = {
 
 
 keywords: Dict[str, TokenType] = {
+    "func": TokenType.FUNC,
     "else": TokenType.ELSE,
     "if": TokenType.IF,
+    "return": TokenType.RETURN,
     "var": TokenType.VAR,
 }
 
