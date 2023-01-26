@@ -9,6 +9,8 @@ class TokenType(enum.Enum):
 
     # Single-character tokens.
     EQUAL = "EQUAL"
+    GREATER = "GREATER"
+    LESS = "LESS"
     MINUS = "MINUS"
     PLUS = "PLUS"
     SEMICOLON = "SEMICOLON"
