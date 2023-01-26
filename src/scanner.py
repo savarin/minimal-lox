@@ -7,34 +7,48 @@ class TokenType(enum.Enum):
     # Types
     INTEGER = "INTEGER"
 
+    # Identifiers
+    NAME = "NAME"
+
     # Single-character tokens.
+    BRACE_LEFT = "BRACE_LEFT"
+    BRACE_RIGHT = "BRACE_RIGHT"
     EQUAL = "EQUAL"
     GREATER = "GREATER"
     LESS = "LESS"
     MINUS = "MINUS"
+    PAREN_LEFT = "PAREN_LEFT"
+    PAREN_RIGHT = "PAREN_RIGHT"
     PLUS = "PLUS"
     SEMICOLON = "SEMICOLON"
     TIMES = "TIMES"
 
     # Keywords
-    NAME = "NAME"
+    IF = "IF"
     VAR = "VAR"
 
     EOF = "EOF"
 
 
 literals: Dict[str, TokenType] = {
+    "{": TokenType.BRACE_LEFT,
+    "}": TokenType.BRACE_RIGHT,
     "=": TokenType.EQUAL,
     ">": TokenType.GREATER,
     "<": TokenType.LESS,
     "-": TokenType.MINUS,
+    "(": TokenType.PAREN_LEFT,
+    ")": TokenType.PAREN_RIGHT,
     "+": TokenType.PLUS,
     ";": TokenType.SEMICOLON,
     "*": TokenType.TIMES,
 }
 
 
-keywords: Dict[str, TokenType] = {"var": TokenType.VAR}
+keywords: Dict[str, TokenType] = {
+    "if": TokenType.IF,
+    "var": TokenType.VAR,
+}
 
 
 @dataclasses.dataclass
